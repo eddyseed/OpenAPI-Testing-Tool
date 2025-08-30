@@ -6,8 +6,8 @@ export const uploadSchema = async (file: File) => {
 
   console.log("Uploading file to backend...", formData);
 
-  try {
-    const response = await axios.post("/api/upload-schema", formData, {
+  try { 
+    const response = await axios.post("/api/upload-schema/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
