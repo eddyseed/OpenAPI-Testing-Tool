@@ -9,8 +9,9 @@ import type { AxiosError } from 'axios';
 const SchemaPage: React.FC = () => {
     const [content, setContent] = useState<string>("");
     const [fileName, setFileName] = useState<string>("No file selected");
+    const [editorLanguage, setEditorLanguage] = useState<'json' | 'yaml'>('json');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    
     const handleButtonClick = () => {
         fileInputRef.current?.click();
     };
@@ -23,6 +24,13 @@ const SchemaPage: React.FC = () => {
         reader.onload = (e) => {
             const text = e.target?.result as string;
             setContent(text);
+
+            const fileExtension = file.name.split('.').pop()?.toLowerCase();
+            if (fileExtension === 'yaml' || fileExtension === 'yml') {
+                setEditorLanguage('yaml');
+            } else {
+                setEditorLanguage('json');
+            }
         };
         reader.readAsText(file);
         setFileName(file.name);
@@ -79,7 +87,7 @@ const SchemaPage: React.FC = () => {
 
                 <input
                     type="file"
-                    accept=".json,.yaml,.yml,.graphql"
+                    accept=".json,.yaml,.yml"
                     ref={fileInputRef}
                     onChange={handleFileUpload}
                     style={{ display: "none" }}
@@ -99,7 +107,7 @@ const SchemaPage: React.FC = () => {
                 <Editor
                     height="70vh"
                     width="90%"
-                    language="json"
+                    language={editorLanguage}
                     value={content}   // controlled value, updates with file upload
                     theme="vs-dark"
                     onChange={(value) => setContent(value || "")} // update state on content change
