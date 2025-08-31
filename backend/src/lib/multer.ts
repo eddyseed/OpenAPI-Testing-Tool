@@ -10,11 +10,13 @@ export const upload = multer({
   fileFilter: (req, file, cb) => {
     if (
       file.mimetype === "application/json" ||
-      file.originalname.match(/\.(json)$/)
+      file.mimetype === "application/x-yaml" ||
+      file.mimetype === "text/yaml" ||
+      file.originalname.match(/\.(json|yml|yaml)$/i)
     ) {
       cb(null, true);
     } else {
-      cb(new Error("Please upload a JSON file."));
+      cb(new Error("Please upload a JSON or YAML file."));
     }
   },
 });
