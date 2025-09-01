@@ -1,5 +1,6 @@
 import type { OpenApiOperation, TestCase } from "../types/ai.types.js";
-
+import logger from "../lib/logger.js";
+import axios from "axios";
 async function generateTestCasesForEndpoint(
   method: string,
   path: string,
@@ -38,6 +39,34 @@ Responses: ${JSON.stringify(endpointDefinition.responses || {}, null, 2)}
 JSON Response:
 `;
   const prompt = `${roleAndTask}\n${rules}\n${dataContext}\n${command}`;
+
+  try {
+    logger.debug(`Sending prompt to AI for ${method.toUpperCase()} ${path}`);
+    const response = await axios.post("http://localhost:11434/api/generate", {
+      model: "llama3.1:8b",
+      prompt: prompt,
+      stream: false,
+    });
+    const aiResponseText = response.data.response;
+    const testCases: TestCase[] = JSON.parse(aiResponseText);
+    if (!Array.isArray(testCases)) {
+      throw new Error("AI response is not a JSON array");
+    }
+    logger.debug(
+      `Successfully generated ${
+        testCases.length
+      } test cases for ${method.toUpperCase()} ${path}`
+    );
+    return testCases;
+  } catch (error) {
+    logger.error("AI test generation failed", {
+      error: error.message,
+      method,
+      path,
+    });
+    // Return empty array instead of failing completely
+    return [];
+  }
 
   return testCases;
 }
