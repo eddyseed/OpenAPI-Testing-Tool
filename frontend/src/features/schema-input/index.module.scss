@@ -1,10 +1,14 @@
-.schema_page{
-    height: 100vh;
+.schema_page {
+    height: 80vh;
+    .activity_area {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
 
-    .upload_json_schema_btn{
-        background-color: white;
+        &>div {
+            &:nth-child(2) {
+                display: grid;
+            }
+        }
     }
-    .generate_test_cases_btn{
-        background-color: #4CAF50;
-    }
-}   
+
+}
