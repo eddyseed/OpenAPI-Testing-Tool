@@ -1,12 +1,13 @@
 import type { OpenApiOperation, TestCase } from "../types/ai.types.js";
+import { jsonrepair } from "jsonrepair";
 import logger from "../lib/logger.js";
 import axios from "axios";
-async function generateTestCasesForEndpoint(
+export async function generateTestCasesForEndpoint(
   method: string,
   path: string,
   endpointDefinition: OpenApiOperation
 ): Promise<TestCase[]> {
-  const testCases: TestCase[] = [];
+  let testCases: TestCase[] = [];
 
   const roleAndTask = `You are an expert QA automation engineer. Your sole purpose is to generate comprehensive and diverse test cases for REST API endpoints.
 Generate 3 test cases for the following API endpoint. Focus on creating distinct scenarios for valid, edge, and invalid inputs.`;
@@ -42,13 +43,28 @@ JSON Response:
 
   try {
     logger.debug(`Sending prompt to AI for ${method.toUpperCase()} ${path}`);
-    const response = await axios.post("http://localhost:11434/api/generate", {
-      model: "llama3.1:8b",
+    const response = await axios.post("http://127.0.0.1:11434/api/generate", {
+      model: "gemma2:2b",
       prompt: prompt,
       stream: false,
     });
-    const aiResponseText = response.data.response;
-    const testCases: TestCase[] = JSON.parse(aiResponseText);
+
+    let aiResponseText: string = (response.data.response || "").trim();
+
+    if (aiResponseText.startsWith("```")) {
+      aiResponseText = aiResponseText
+        .replace(/```[a-zA-Z]*\n?/, "") // opening fence
+        .replace(/```$/, "") // closing fence
+        .trim();
+    }
+
+    logger.debug("Raw AI response (cleaned):", aiResponseText);
+    try {
+      testCases = JSON.parse(aiResponseText);
+    } catch (err) {
+      logger.warn("Raw JSON invalid, attempting repair...");
+      testCases = JSON.parse(jsonrepair(aiResponseText));
+    }
     if (!Array.isArray(testCases)) {
       throw new Error("AI response is not a JSON array");
     }
@@ -57,16 +73,15 @@ JSON Response:
         testCases.length
       } test cases for ${method.toUpperCase()} ${path}`
     );
-    return testCases;
   } catch (error) {
     logger.error("AI test generation failed", {
       error: error.message,
       method,
       path,
     });
+    console.log(error);
     // Return empty array instead of failing completely
     return [];
   }
-
   return testCases;
 }
