@@ -10,10 +10,12 @@ interface OpenApiSchema {
 }
 export const uploadSchema = async (
   file: File,
-  setSpec: (spec: OpenApiSchema) => void
+  setSpec: (spec: OpenApiSchema) => void,
+  logToTerminal: (msg: string) => void
 ) => {
   const formData = new FormData();
   formData.append("file", file);
+  logToTerminal("Uploading file to backend...");
   console.log("Uploading file to backend...", formData);
 
   try {
@@ -23,10 +25,12 @@ export const uploadSchema = async (
       },
     });
 
+    logToTerminal("File uploaded successfully!");
     console.log("File uploaded successfully:", response.data);
     setSpec(response.data.data);
     return response.data;
   } catch (error) {
+    logToTerminal(`Error uploading file: ${error}`);
     console.error("Error uploading file:", error);
     throw error;
   }

@@ -12,7 +12,8 @@ import {
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "react-hot-toast";
-
+import { useTerminal } from '@/context/TerminalContext'
+import { useLoading } from "@/context/LoadingContext";
 type EndpointRow = {
   method: string;
   path: string;
@@ -23,16 +24,16 @@ type EndpointRow = {
 const TestDetailsPane: React.FC = () => {
   const { file } = useFile();
   const { spec } = useOpenApi();
-
+  const { logToTerminal } = useTerminal();
+  const { loading, setLoading } = useLoading();
   // ✅ use TestRunnerContext
   const ctx = useContext(TestRunnerContext);
-  const [loading, setLoading] = useState(false);
 
   if (!ctx) {
     return <p className="text-red-500">❌ TestRunnerProvider missing!</p>;
   }
 
-  const { runTests, results } = ctx;
+  const { runTests } = ctx;
 
   // Build table rows from spec
   const data: EndpointRow[] = useMemo(() => {
@@ -71,7 +72,7 @@ const TestDetailsPane: React.FC = () => {
     if (!spec) return;
     try {
       setLoading(true);
-      await runTests(spec);
+      await runTests(spec, logToTerminal);
     } finally {
       setLoading(false);
     }
@@ -185,25 +186,6 @@ const TestDetailsPane: React.FC = () => {
                   ))}
                 </tbody>
               </table>
-            )}
-          </div>
-
-          {/* Generated Test Cases */}
-          <div className="p-6 bg-slate-950 text-white">
-            <h1 className="text-2xl font-bold mb-4">Generated Test Cases</h1>
-            {results.length === 0 ? (
-              <p>No test cases yet. Click the button above.</p>
-            ) : (
-              <ul className="space-y-2">
-                {results.map((tc: any, i: number) => (
-                  <li
-                    key={i}
-                    className="p-2 border border-gray-700 rounded"
-                  >
-                    {tc.name ?? `Test Case ${i + 1}`}
-                  </li>
-                ))}
-              </ul>
             )}
           </div>
         </section>

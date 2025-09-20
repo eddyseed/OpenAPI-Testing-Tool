@@ -4,6 +4,7 @@ export function useWebSocket(url: string = "ws://localhost:3001") {
   const socketRef = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<Error | null>(null); // NEW
 
   // Send message through the socket
   const sendMessage = useCallback((msg: string) => {
@@ -15,6 +16,10 @@ export function useWebSocket(url: string = "ws://localhost:3001") {
   }, []);
 
   useEffect(() => {
+    // Reset error and connection status on new connection attempt
+    setError(null);
+    setIsConnected(false);
+
     // Create WebSocket connection
     socketRef.current = new WebSocket(url);
 
@@ -32,6 +37,8 @@ export function useWebSocket(url: string = "ws://localhost:3001") {
     // Handle errors
     socketRef.current.onerror = (err) => {
       console.error("❌ WebSocket error:", err);
+      setError(new Error("Failed to connect to backend")); // NEW
+      setIsConnected(false);
     };
 
     // Handle close
@@ -46,5 +53,5 @@ export function useWebSocket(url: string = "ws://localhost:3001") {
     };
   }, [url]);
 
-  return { messages, sendMessage, isConnected };
+  return { messages, sendMessage, isConnected, error }; // NEW
 }
