@@ -5,6 +5,7 @@ import logger from "../lib/logger.js";
 
 const router = express.Router();
 
+logger.info(`Mounting route /api/generate-testcases/`);
 router.post("/", async (req, res) => {
   try {
     logger.info("Backend Recieved your request");

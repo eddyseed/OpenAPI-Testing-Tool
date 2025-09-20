@@ -1,5 +1,5 @@
 import './App.css'
-import Terminal from './features/test-runner'
+import Terminal from './components/Terminal'
 import { FileProvider } from './context/fileContext'
 import { OpenApiProvider } from './context/openApiContext'
 import SchemaPage from './features/schema-input'
@@ -13,7 +13,7 @@ function App() {
           <FileProvider>
             <SchemaPage />
             <TestDetailsPane />
-            <Terminal/>
+            <Terminal />
           </FileProvider>
         </OpenApiProvider >
       </TestRunnerProvider >

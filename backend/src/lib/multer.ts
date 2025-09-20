@@ -7,7 +7,7 @@ export const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB file size limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_, file, cb) => {
     if (
       file.mimetype === "application/json" ||
       file.mimetype === "application/x-yaml" ||

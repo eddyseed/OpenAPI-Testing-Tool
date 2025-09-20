@@ -17,4 +17,4 @@ export async function generateTestCases(spec: OpenApiData) {
     headers: { "Content-Type": "application/json" },
   });
   return res.data;
-}
+} 

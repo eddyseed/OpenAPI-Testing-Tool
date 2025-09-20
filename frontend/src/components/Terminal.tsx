@@ -1,31 +1,57 @@
 import { useEffect, useRef } from "react";
 import { Terminal } from "xterm";
-import { io } from "socket.io-client";
-import 'xterm/css/xterm.css';
+import "xterm/css/xterm.css"
+import { useWebSocket } from "../hooks/useWebSocket";
 
-const TerminalComponent: React.FC = () => { 
-    const terminalRef = useRef<HTMLDivElement>(null);
-    const term = useRef<Terminal>();
+export default function TerminalView() {
+    const terminalRef = useRef<HTMLDivElement | null>(null);
+    const xtermRef = useRef<Terminal | null>(null);
+    const { messages, sendMessage, isConnected } = useWebSocket("ws://localhost:3001");
 
     useEffect(() => {
-        if (!terminalRef.current) return;
+        // Initialize Xterm only once
+        if (terminalRef.current && !xtermRef.current) {
+            const term = new Terminal({
+                cols: 80,
+                rows: 24,
+                theme: { background: "#1e1e1e", foreground: "#ffffff" },
+                cursorBlink: true,
+            });
+            term.open(terminalRef.current);
+            term.writeln("🟢 Terminal initialized...");
+            xtermRef.current = term;
 
-        // Initialize terminal
-        term.current = new Terminal({ convertEol: true, cols: 80, rows: 20 });
-        term.current.open(terminalRef.current);
-
-        // Connect to backend socket
-        const socket = io('http://localhost:3001'); // replace with your backend URL
-
-        socket.on('log', (data: string) => {
-            term.current?.writeln(data);
-        });
+            // Handle user input
+            term.onData((data) => {
+                sendMessage(data); // Send typed data to WebSocket
+            });
+        }
 
         return () => {
-            socket.disconnect();
-            term.current?.dispose();
+            xtermRef.current?.dispose();
         };
-    }, []);
-    return <div ref={terminalRef} style={{ width: '100%', height: '200px', background: 'black' }} />
+    }, [sendMessage]);
+
+    // When new WebSocket messages arrive, print them to the terminal
+    useEffect(() => {
+        if (xtermRef.current && messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            xtermRef.current.writeln(lastMessage);
+        }
+    }, [messages]);
+
+    return (
+        <div className="p-4">
+            <p>Status: {isConnected ? "🟢 Connected" : "🔴 Disconnected"}</p>
+            <div
+                ref={terminalRef}
+                style={{
+                    width: "100%",
+                    height: "400px",
+                    backgroundColor: "#1e1e1e",
+                    borderRadius: "8px",
+                }}
+            ></div>
+        </div>
+    );
 }
-export default TerminalComponent;
