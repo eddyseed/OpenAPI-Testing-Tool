@@ -42,7 +42,7 @@ JSON Response:
   const prompt = `${roleAndTask}\n${rules}\n${dataContext}\n${command}`;
 
   try {
-    logger.debug(`Sending prompt to AI for ${method.toUpperCase()} ${path}`);
+    logger.info(`Sending prompt to AI for ${method.toUpperCase()} ${path}`);
     const response = await axios.post("http://127.0.0.1:11434/api/generate", {
       model: "gemma2:2b",
       prompt: prompt,
@@ -58,7 +58,7 @@ JSON Response:
         .trim();
     }
 
-    logger.debug("Raw AI response (cleaned):", aiResponseText);
+    logger.info("Raw AI response (cleaned):" + aiResponseText);
     try {
       testCases = JSON.parse(aiResponseText);
     } catch (err) {
@@ -68,7 +68,7 @@ JSON Response:
     if (!Array.isArray(testCases)) {
       throw new Error("AI response is not a JSON array");
     }
-    logger.debug(
+    logger.info(
       `Successfully generated ${
         testCases.length
       } test cases for ${method.toUpperCase()} ${path}`

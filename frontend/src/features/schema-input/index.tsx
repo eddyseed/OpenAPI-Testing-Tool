@@ -1,22 +1,37 @@
 import React, { useRef, useState } from 'react';
 import styles from './index.module.scss';
-import { Button } from "@/components/ui/button";
 import { UploadIcon, PlayIcon } from "lucide-react";
 import Editor from '@monaco-editor/react';
 import toast, { Toaster } from 'react-hot-toast';
-import { uploadSchema } from './api';
+import { uploadSchemaFile } from '@/lib/upload-file';
 import type { AxiosError } from 'axios';
-import { useFile } from '@/context/fileContext';
-import { useOpenApi } from '@/context/openApiContext';
+import { useFile } from '@/hooks/useFile';
+import { useLoading } from '@/hooks/useLoading';
+import { useOpenApi } from '@/hooks/useOpenApi';
+import { useTerminal } from '@/hooks/useTerminal';
+import type { ErrorResponse } from '@/types/errorResponse.type';
+import { useTestRunner } from '@/hooks/useTestRunner';
 const SchemaPage: React.FC = () => {
     const { file, setFile } = useFile();
     const { setSpec } = useOpenApi();
     const [content, setContent] = useState<string>("");
     const [editorLanguage, setEditorLanguage] = useState<'json' | 'yaml'>('json');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const { logToTerminal } = useTerminal();
+    const { loading, setLoading } = useLoading();
+    const { spec } = useOpenApi()
+    const { runTests } = useTestRunner();
     const handleButtonClick = () => {
         fileInputRef.current?.click();
+    };
+    const handleRunTests = async () => {
+        if (!spec) return;
+        try {
+            setLoading(true);
+            await runTests(spec, logToTerminal);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +54,7 @@ const SchemaPage: React.FC = () => {
 
         // Now we'll send the file to the backend
         try {
-            await uploadSchema(file, setSpec);
+            await uploadSchemaFile(file, setSpec, logToTerminal);
             toast.success(`Upload was successful`);
         } catch (err) {
             const error = err as AxiosError;
@@ -47,7 +62,7 @@ const SchemaPage: React.FC = () => {
             if (error.response) {
                 // Backend responded with error
                 const status = error.response.status;
-                const msg = (error.response.data as any)?.message || "Server error";
+                const msg = (error.response.data as AxiosError<ErrorResponse>)?.message || "Server error";
 
                 if (status === 400) {
                     toast.error(`Bad Request: ${msg}`);
@@ -78,6 +93,7 @@ const SchemaPage: React.FC = () => {
             <section className={`${styles.activity_area} h-full`}>
                 <div className="editor flex justify-center items-center">
                     <Editor
+
                         height="70vh"
                         width="90%"
                         language={editorLanguage}
@@ -89,6 +105,7 @@ const SchemaPage: React.FC = () => {
                             minimap: { enabled: false },
                             lineNumbers: "on",
                             wordWrap: "on",
+                            readOnly: true
                         }}
                     />
                 </div>
@@ -102,26 +119,36 @@ const SchemaPage: React.FC = () => {
                         <main className='mb-4'>
                             <ul className="space-y-3">
                                 {[
-                                    "Select a file to upload or paste your schema directly into the editor.",
-                                    "Click \"Generate Test Cases\" to create test cases based on the schema.",
+                                    "Select a file to upload (e.g., sample.yaml).",
+                                    "View the test cases to be executed.",
                                     "Review and modify the generated test cases as needed.",
-                                    "Run the test cases to validate your API endpoints.",
-                                ].map((step, i) => (
-                                    <li key={i} className="flex items-start">
-                                        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-3">
-                                            {i + 1}
-                                        </span>
-                                        <span>{step}</span>
-                                    </li>
-                                ))}
+                                    "Run the test cases to validate your API endpoints."
+                                ]
+                                    .map((step, i) => (
+                                        <li key={i} className="flex items-start">
+                                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-3">
+                                                {i + 1}
+                                            </span>
+                                            <span>{step}</span>
+                                        </li>
+                                    ))}
                             </ul>
 
                         </main>
-                        <div className='space-x-4'>
-                            <Button className={`${styles.upload_json_schema_btn} py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-hidden focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20 cursor-pointer`} onClick={handleButtonClick}>
+                        <div className="space-x-4 flex">
+                            {/* Upload Schema Button */}
+                            <button
+                                type="button"
+                                onClick={handleButtonClick}
+                                className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
+               bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200
+               disabled:opacity-50 disabled:pointer-events-none
+               dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20 cursor-pointer"
+                            >
                                 <UploadIcon /> Upload Schema File
-                            </Button>
+                            </button>
 
+                            {/* Hidden File Input */}
                             <input
                                 type="file"
                                 accept=".json,.yaml,.yml"
@@ -129,13 +156,19 @@ const SchemaPage: React.FC = () => {
                                 onChange={handleFileUpload}
                                 style={{ display: "none" }}
                             />
-
-                            {/* Generate Test Case Button */}
-                            <Button disabled={!file} type="submit" className={`${styles.generate_test_cases_btn} py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-teal-100 text-teal-800 hover:bg-teal-200 focus:outline-hidden focus:bg-teal-200 disabled:opacity-50 disabled:pointer-events-none dark:text-teal-500 dark:bg-teal-800/30 dark:hover:bg-teal-800/20 dark:focus:bg-teal-800/20`}>
-                                <PlayIcon /> Generate Test Cases
-                            </Button>
-
+                            <button
+                                disabled={!file || loading}
+                                type="submit"
+                                onClick={handleRunTests}
+                                className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
+               bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200
+               disabled:opacity-50 disabled:pointer-events-none
+               dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20 cursor-pointer"
+                            >
+                                {loading ? "Generating..." : <><PlayIcon /> Generate Test Cases</>}
+                            </button>
                         </div>
+
                     </header>
                     <div>
                         <span className='text-white w-4/5'>

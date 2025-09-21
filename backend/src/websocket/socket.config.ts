@@ -8,9 +8,7 @@ export const setUpWebSocket = (server: HTTPServer) => {
 
   wss.on("connection", (ws: WebSocket) => {
     logger.info("Client has connected!");
-    ws.send(
-      JSON.stringify({ type: "status", data: "Connected to WebSocket server!" })
-    );
+    ws.send("Connection to the backend successful!");
 
     // Listen for *all* incoming messages
     ws.on("message", (raw: string) => handleMessage(ws, raw));

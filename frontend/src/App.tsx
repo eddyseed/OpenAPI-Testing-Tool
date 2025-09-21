@@ -1,19 +1,29 @@
 import './App.css'
-import Terminal from './components/Terminal'
-import { FileProvider } from './context/fileContext'
-import { OpenApiProvider } from './context/openApiContext'
+import Navbar01 from './components/ui/navbar'
+import { FileProvider } from './context/FileProvider'
+import { LoadingProvider } from './context/LoadingProvider'
+import { OpenApiProvider } from './context/openApiProvider'
+import { TerminalProvider } from './context/TerminalProvider'
+import { TestRunnerProvider } from './context/TestRunnerProvider'
+import Dashboard from './features/dashboard'
 import SchemaPage from './features/schema-input'
 import TestDetailsPane from './features/test-details'
-import { TestRunnerProvider } from './features/test-runner/TestRunnerContext'
+import TestRunner from './features/test-runner'
 function App() {
   return (
     <>
       <TestRunnerProvider>
         <OpenApiProvider>
           <FileProvider>
-            <SchemaPage />
-            <TestDetailsPane />
-            <Terminal />
+            <TerminalProvider>
+              <LoadingProvider>
+                <Navbar01 />
+                <SchemaPage />
+                <TestDetailsPane />
+                <TestRunner />
+                <Dashboard />
+              </LoadingProvider>
+            </TerminalProvider>
           </FileProvider>
         </OpenApiProvider >
       </TestRunnerProvider >
