@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FileContext } from "@/context/fileContext";
+import { FileContext } from "@/context/FileContext";
 import type { FileContextType } from "@/types/fileContext.type";
 
 export const useFile = (): FileContextType => {

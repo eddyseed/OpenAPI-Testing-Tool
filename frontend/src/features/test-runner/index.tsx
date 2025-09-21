@@ -3,7 +3,7 @@ import React from 'react';
 
 const TestRunner: React.FC = () => {
   return (
-    <div>
+    <div id='TERMINAL'>
       <TerminalView />
     </div>
   );

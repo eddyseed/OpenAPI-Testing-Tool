@@ -19,7 +19,7 @@ function App() {
               <LoadingProvider>
                 <Navbar01 />
                 <SchemaPage />
-                <TestDetailsPane />
+                <TestDetailsPane/>
                 <TestRunner />
                 <Dashboard />
               </LoadingProvider>

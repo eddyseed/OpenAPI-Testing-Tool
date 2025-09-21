@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { FileContext } from "./fileContext";
+import { FileContext } from "./FileContext";
+
 
 
 export const FileProvider = ({ children }: { children: ReactNode }) => {
