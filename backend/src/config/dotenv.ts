@@ -11,11 +11,6 @@ export const SERVER_ENV = {
   LOCAL_HOST: process.env.LOCAL_HOST || "http://localhost:3001",
   CORS_ORIGIN: process.env.CORS_ORIGIN || "http://localhost:5173",
 };
-
-export const DB_ENV = {
-  DATABASE_URL: process.env.DATABASE_URL || "",
-};
-
 export const MODEL_ENV = {
   OLLAMA_HOST: process.env.OLLAMA_HOST || "http://localhost:11434",
   MODEL_NAME: process.env.MODEL_NAME || "phi3:mini",
