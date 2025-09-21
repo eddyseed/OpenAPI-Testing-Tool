@@ -1,57 +1,48 @@
-import React, { useMemo, useContext, useState } from "react";
+import React, { useMemo } from "react";
 import styles from "./index.module.scss";
-import { useFile } from "@/context/fileContext";
 import { FileIcon, FileTypeIcon, LeafyGreenIcon, PlayIcon } from "lucide-react";
-import { useOpenApi } from "@/context/openApiContext";
-import { TestRunnerContext } from "../test-runner/TestRunnerContext";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "react-hot-toast";
-import { useTerminal } from '@/context/TerminalContext'
-import { useLoading } from "@/context/LoadingContext";
-type EndpointRow = {
-  method: string;
-  path: string;
-  summary: string;
-  responses: string;
-};
+import { useFile } from "@/hooks/useFile";
+import { useLoading } from "@/hooks/useLoading";
+import { useOpenApi } from "@/hooks/useOpenApi";
+import { useTerminal } from "@/hooks/useTerminal";
+import { useTestRunner } from "@/hooks/useTestRunner";
+import type { OpenAPIV3 } from "openapi-types";
+import type { EndpointRow } from "@/types/endPointRow.type";
+
+type OperationObject = OpenAPIV3.OperationObject;
+type PathItemObject = OpenAPIV3.PathItemObject;
 
 const TestDetailsPane: React.FC = () => {
   const { file } = useFile();
   const { spec } = useOpenApi();
   const { logToTerminal } = useTerminal();
   const { loading, setLoading } = useLoading();
-  // ✅ use TestRunnerContext
-  const ctx = useContext(TestRunnerContext);
+  const { runTests } = useTestRunner();
 
-  if (!ctx) {
-    return <p className="text-red-500">❌ TestRunnerProvider missing!</p>;
-  }
-
-  const { runTests } = ctx;
-
-  // Build table rows from spec
+  // Build table rows from OpenAPI spec
   const data: EndpointRow[] = useMemo(() => {
-    if (!spec || !spec.paths) return [];
+    if (!spec?.paths) return [];
     const rows: EndpointRow[] = [];
-    for (const [path, methods] of Object.entries(spec.paths)) {
-      for (const [method, operation] of Object.entries(methods || {})) {
+
+    for (const [path, pathItem] of Object.entries(spec.paths) as [string, PathItemObject][]) {
+      for (const [method, operation] of Object.entries(pathItem) as [string, OperationObject][]) {
         rows.push({
           method: method.toUpperCase(),
           path,
-          summary: (operation as any).summary || "-",
-          responses: Object.keys((operation as any).responses || {}).join(", "),
+          summary: operation.summary || "-",
+          responses: Object.keys(operation.responses || {}).join(", "),
         });
       }
     }
+
     return rows;
   }, [spec]);
 
+  // Define table columns
   const columns = useMemo<ColumnDef<EndpointRow>[]>(
     () => [
       { accessorKey: "method", header: "Method" },
@@ -62,12 +53,14 @@ const TestDetailsPane: React.FC = () => {
     []
   );
 
+  // Create table instance
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // Run tests handler
   const handleRunTests = async () => {
     if (!spec) return;
     try {
@@ -79,7 +72,7 @@ const TestDetailsPane: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.test_details_page} bg-slate-950 `}>
+    <div className={`${styles.test_details_page} bg-slate-950`}>
       <Toaster position="top-center" reverseOrder={false} />
 
       <h1 className="text-white text-2xl font-bold flex items-center px-12">
@@ -98,28 +91,25 @@ const TestDetailsPane: React.FC = () => {
                 <FileIcon className="mr-2" />
                 UPLOADED FILE
               </span>
-              <span className="px-8">
-                {file ? file.name : "No file uploaded"}
-              </span>
+              <span className="px-8">{file ? file.name : "No file uploaded"}</span>
             </div>
 
             <div className="flex flex-col space-y-1 text-white">
-              <span className="font-bold text-white flex space-x-2 mt-4">
+              <span className="font-bold flex space-x-2 mt-4">
                 <FileTypeIcon className="mr-2" />
                 FILE TYPE
               </span>
               <span className="px-8 text-white">
                 {file?.name.endsWith(".json")
                   ? "JSON"
-                  : file?.name.endsWith(".yaml") ||
-                    file?.name.endsWith(".yml")
+                  : file?.name.endsWith(".yaml") || file?.name.endsWith(".yml")
                     ? "YAML"
                     : "Unknown"}
               </span>
             </div>
 
             <div className="flex flex-col space-y-1 text-white">
-              <span className="font-bold text-white flex space-x-2 mt-4">
+              <span className="font-bold flex space-x-2 mt-4">
                 <LeafyGreenIcon className="mr-2" />
                 FILE SIZE
               </span>
@@ -159,10 +149,7 @@ const TestDetailsPane: React.FC = () => {
                           key={header.id}
                           className="px-4 py-2 border border-gray-700 text-left"
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                       ))}
                     </tr>
@@ -172,14 +159,8 @@ const TestDetailsPane: React.FC = () => {
                   {table.getRowModel().rows.map((row) => (
                     <tr key={row.id} className="hover:bg-gray-700">
                       {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="px-4 py-2 border border-gray-700"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                        <td key={cell.id} className="px-4 py-2 border border-gray-700">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
                     </tr>

@@ -1,16 +1,16 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './index.module.scss';
-import { Button } from "@/components/ui/button";
 import { UploadIcon, PlayIcon } from "lucide-react";
 import Editor from '@monaco-editor/react';
 import toast, { Toaster } from 'react-hot-toast';
-import { uploadSchema } from './api';
+import { uploadSchemaFile } from '@/lib/upload-file';
 import type { AxiosError } from 'axios';
-import { useFile } from '@/context/fileContext';
-import { useOpenApi } from '@/context/openApiContext';
-import { useTerminal } from "@/context/TerminalContext";
-import { TestRunnerContext } from '../test-runner/TestRunnerContext';
-import { useLoading } from '@/context/LoadingContext';
+import { useFile } from '@/hooks/useFile';
+import { useLoading } from '@/hooks/useLoading';
+import { useOpenApi } from '@/hooks/useOpenApi';
+import { useTerminal } from '@/hooks/useTerminal';
+import type { ErrorResponse } from '@/types/errorResponse.type';
+import { useTestRunner } from '@/hooks/useTestRunner';
 const SchemaPage: React.FC = () => {
     const { file, setFile } = useFile();
     const { setSpec } = useOpenApi();
@@ -19,9 +19,8 @@ const SchemaPage: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const { logToTerminal } = useTerminal();
     const { loading, setLoading } = useLoading();
-    const ctx = useContext(TestRunnerContext);
     const { spec } = useOpenApi()
-    const { runTests } = ctx;
+    const { runTests } = useTestRunner();
     const handleButtonClick = () => {
         fileInputRef.current?.click();
     };
@@ -55,7 +54,7 @@ const SchemaPage: React.FC = () => {
 
         // Now we'll send the file to the backend
         try {
-            await uploadSchema(file, setSpec, logToTerminal);
+            await uploadSchemaFile(file, setSpec, logToTerminal);
             toast.success(`Upload was successful`);
         } catch (err) {
             const error = err as AxiosError;
@@ -63,7 +62,7 @@ const SchemaPage: React.FC = () => {
             if (error.response) {
                 // Backend responded with error
                 const status = error.response.status;
-                const msg = (error.response.data as any)?.message || "Server error";
+                const msg = (error.response.data as AxiosError<ErrorResponse>)?.message || "Server error";
 
                 if (status === 400) {
                     toast.error(`Bad Request: ${msg}`);
@@ -94,6 +93,7 @@ const SchemaPage: React.FC = () => {
             <section className={`${styles.activity_area} h-full`}>
                 <div className="editor flex justify-center items-center">
                     <Editor
+
                         height="70vh"
                         width="90%"
                         language={editorLanguage}
@@ -105,6 +105,7 @@ const SchemaPage: React.FC = () => {
                             minimap: { enabled: false },
                             lineNumbers: "on",
                             wordWrap: "on",
+                            readOnly: true
                         }}
                     />
                 </div>
@@ -118,18 +119,19 @@ const SchemaPage: React.FC = () => {
                         <main className='mb-4'>
                             <ul className="space-y-3">
                                 {[
-                                    "Select a file to upload or paste your schema directly into the editor.",
-                                    "Click \"Generate Test Cases\" to create test cases based on the schema.",
+                                    "Select a file to upload (e.g., sample.yaml).",
+                                    "View the test cases to be executed.",
                                     "Review and modify the generated test cases as needed.",
-                                    "Run the test cases to validate your API endpoints.",
-                                ].map((step, i) => (
-                                    <li key={i} className="flex items-start">
-                                        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-3">
-                                            {i + 1}
-                                        </span>
-                                        <span>{step}</span>
-                                    </li>
-                                ))}
+                                    "Run the test cases to validate your API endpoints."
+                                ]
+                                    .map((step, i) => (
+                                        <li key={i} className="flex items-start">
+                                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-3">
+                                                {i + 1}
+                                            </span>
+                                            <span>{step}</span>
+                                        </li>
+                                    ))}
                             </ul>
 
                         </main>
@@ -154,8 +156,6 @@ const SchemaPage: React.FC = () => {
                                 onChange={handleFileUpload}
                                 style={{ display: "none" }}
                             />
-
-                            {/* Generate Test Cases Button */}
                             <button
                                 disabled={!file || loading}
                                 type="submit"

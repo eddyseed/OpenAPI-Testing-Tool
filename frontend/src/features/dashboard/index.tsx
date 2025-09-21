@@ -1,9 +1,7 @@
-import React, { useContext } from 'react';
-import { TestRunnerContext } from '../test-runner/TestRunnerContext';
+import { useTestRunner } from '@/hooks/useTestRunner';
 
 const Dashboard: React.FC = () => {
-    const ctx = useContext(TestRunnerContext);
-    const { results } = ctx;
+    const { results } = useTestRunner();
     return (
         <div className="p-6 bg-slate-950 text-white">
             <h1 className="text-2xl font-bold mb-4">Generated Test Cases</h1>
