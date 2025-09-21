@@ -2,6 +2,7 @@ import type { OpenApiOperation, TestCase } from "../types/ai.types.js";
 import { jsonrepair } from "jsonrepair";
 import logger from "../lib/logger.js";
 import axios from "axios";
+import { MODEL_ENV } from "../config/dotenv.js";
 export async function generateTestCasesForEndpoint(
   method: string,
   path: string,
@@ -43,8 +44,8 @@ JSON Response:
 
   try {
     logger.info(`Sending prompt to AI for ${method.toUpperCase()} ${path}`);
-    const response = await axios.post("http://127.0.0.1:11434/api/generate", {
-      model: "gemma2:2b",
+    const response = await axios.post(`${MODEL_ENV.OLLAMA_HOST}/api/generate`, {
+      model: MODEL_ENV.MODEL_NAME,
       prompt: prompt,
       stream: false,
     });
