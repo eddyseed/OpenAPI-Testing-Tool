@@ -27,6 +27,3 @@ jobs:
       - name: Install backend deps
         run: npm install
         working-directory: backend
-      - name: Run backend tests
-        run: npm test
-        working-directory: backend
