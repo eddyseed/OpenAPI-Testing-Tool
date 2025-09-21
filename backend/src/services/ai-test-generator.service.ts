@@ -74,13 +74,18 @@ JSON Response:
         testCases.length
       } test cases for ${method.toUpperCase()} ${path}`
     );
-  } catch (error) {
+  } catch (error: unknown) {
+    // Type guard to safely access message
+    const message = error instanceof Error ? error.message : String(error);
+
     logger.error("AI test generation failed", {
-      error: error.message,
+      error: message,
       method,
       path,
     });
-    console.log(error);
+
+    console.error(error);
+
     // Return empty array instead of failing completely
     return [];
   }
