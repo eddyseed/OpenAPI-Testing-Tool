@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 import { useWebSocket } from "../hooks/useWebSocket";
-import { useTerminal } from "@/context/TerminalContext";
+import { useTerminal } from "@/hooks/useTerminal";
 
 export default function TerminalView() {
     const terminalRef = useRef<HTMLDivElement | null>(null);
@@ -22,8 +22,7 @@ export default function TerminalView() {
             theme: {
                 background: "#0f0f1f",   // dark background
                 foreground: "#00ffff",   // neon cyan text
-                cursor: "#00ffff",       // neon cursor
-                selection: "rgba(0, 255, 255, 0.3)" // translucent selection
+                cursor: "#00ffff",       // neon cursor 
             }
         });
 
@@ -43,9 +42,9 @@ export default function TerminalView() {
         if (!xtermRef.current) return;
 
         if (error) {
-            xtermRef.current.writeln(`❌ Connection failed: ${error.message}`);
+            xtermRef.current.writeln(`Connection failed: ${error.message}`);
         } else if (isConnected) {
-            xtermRef.current.writeln("✅ Connected to backend!");
+            xtermRef.current.writeln("Connected to backend!");
         }
         // Print the last message from the server
         if (messages.length > 0) {

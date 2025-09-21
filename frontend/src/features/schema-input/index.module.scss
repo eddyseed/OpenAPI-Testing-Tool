@@ -1,14 +1,13 @@
 .schema_page {
-    height: 80vh;
-    .activity_area {
+  height: 80vh;
+  .activity_area {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    & > div {
+      &:nth-child(2) {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-
-        &>div {
-            &:nth-child(2) {
-                display: grid;
-            }
-        }
+      }
     }
-
+  }
 }

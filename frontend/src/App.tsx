@@ -1,13 +1,14 @@
 import './App.css'
-import { FileProvider } from './context/fileContext'
-import { LoadingProvider } from './context/LoadingContext'
-import { OpenApiProvider } from './context/openApiContext'
-import { TerminalProvider } from './context/TerminalContext'
+import Navbar01 from './components/ui/navbar'
+import { FileProvider } from './context/FileProvider'
+import { LoadingProvider } from './context/LoadingProvider'
+import { OpenApiProvider } from './context/openApiProvider'
+import { TerminalProvider } from './context/TerminalProvider'
+import { TestRunnerProvider } from './context/TestRunnerProvider'
 import Dashboard from './features/dashboard'
 import SchemaPage from './features/schema-input'
 import TestDetailsPane from './features/test-details'
 import TestRunner from './features/test-runner'
-import { TestRunnerProvider } from './features/test-runner/TestRunnerContext'
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
           <FileProvider>
             <TerminalProvider>
               <LoadingProvider>
+                <Navbar01 />
                 <SchemaPage />
                 <TestDetailsPane />
                 <TestRunner />
