@@ -64,6 +64,7 @@ const TestDetailsPane: React.FC = () => {
   const handleRunTests = async () => {
     if (!spec) return;
     try {
+
       setLoading(true);
       await runTests(spec, logToTerminal);
     } finally {

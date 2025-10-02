@@ -13,7 +13,7 @@ export const uploadSchemaFile = async (
   try {
     const response = await uploadSchemaFileAPI(file);
     logToTerminal("File uploaded successfully!");
-    setSpec(response.data.data);
+    setSpec(response.data);
     return response.data;
   } catch (error) {
     logToTerminal(`Error uploading file: ${error}`);

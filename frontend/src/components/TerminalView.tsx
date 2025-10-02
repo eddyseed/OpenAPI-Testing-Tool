@@ -10,7 +10,7 @@ export default function TerminalView() {
     const { registerTerminal } = useTerminal();
 
     // Use your custom WebSocket hook
-    const { messages, isConnected, error } = useWebSocket("ws://localhost:3001");
+    const { messages, isConnected, error } = useWebSocket("ws://localhost:3000");
 
     useEffect(() => {
         if (!terminalRef.current) return;

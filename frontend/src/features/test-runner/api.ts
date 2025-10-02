@@ -1,8 +1,9 @@
-import { apiClient } from "@/lib/api-client";
 import type { OpenApiData } from "@/types/openapi.type";
+import axios from "axios";
 
 export async function generateTestCasesAPI(spec: OpenApiData) {
-  return apiClient.post("/generate-testcases/", spec, {
+  console.log("API Spec:", spec, spec.info);
+  return axios.post("http://localhost:3000/api/generate-testcases/", spec, {
     headers: { "Content-Type": "application/json" },
   });
 }

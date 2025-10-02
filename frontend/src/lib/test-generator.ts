@@ -9,6 +9,7 @@ export async function generateTestCases(
   logToTerminal("Sending POST request to /api/generate-testcases...");
   try {
     const res = await generateTestCasesAPI(spec);
+    console.log(res, res.data);
     logToTerminal("Test cases generated successfully!");
     return res.data;
   } catch (err: unknown) {

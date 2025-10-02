@@ -19,10 +19,9 @@ app.use("/api/upload-schema", genSummaryRoute);
 app.use("/api/generate-testcases", genTestcasesRoute);
 
 // Configure websockets
-const port = SERVER_ENV.PORT || 3001;
+const port = SERVER_ENV.PORT;
 const server = http.createServer(app);
 setUpWebSocket(server);
-
 
 logger.info("Starting the server...");
 server.listen(port, () => {

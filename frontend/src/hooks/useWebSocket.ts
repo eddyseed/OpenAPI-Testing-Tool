@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 
-export function useWebSocket(url: string = "ws://localhost:3001") {
+export function useWebSocket(url: string = "ws://localhost:3000") {
   const socketRef = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);

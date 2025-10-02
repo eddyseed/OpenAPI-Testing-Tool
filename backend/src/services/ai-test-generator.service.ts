@@ -50,7 +50,7 @@ JSON Response:
       stream: false,
     });
 
-    let aiResponseText: string = (response.data.response || "").trim();
+    let aiResponseText: string = (response.data.response || "").trim() ?? "";
 
     if (aiResponseText.startsWith("```")) {
       aiResponseText = aiResponseText
@@ -78,11 +78,14 @@ JSON Response:
     // Type guard to safely access message
     const message = error instanceof Error ? error.message : String(error);
 
-    logger.error("AI test generation failed", {
-      error: message,
-      method,
-      path,
-    });
+    logger.error(
+      "AI test generation failed" +
+        {
+          error: message,
+          method,
+          path,
+        }
+    );
 
     console.error(error);
 
