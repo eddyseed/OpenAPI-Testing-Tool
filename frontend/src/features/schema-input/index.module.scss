@@ -11,3 +11,34 @@
     }
   }
 }
+@media only screen and (max-width: 768px) {
+  .schema_page {
+    height: auto;
+    .activity_area {
+      grid-template-columns: none;
+      grid-template-rows: repeat(2, 1fr);
+      & > div:first-child {
+        padding: 1rem 0;
+        & > section {
+          height: 50vh !important;
+        }
+      }
+      & > div:last-child {
+        padding: 1rem 1.5rem;
+        & > header {
+          &>h1{
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+          }
+          & > div {
+            flex-direction: column;
+            & > button {
+              margin: 0;
+              margin-bottom: 0.75rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

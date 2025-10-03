@@ -19,9 +19,9 @@ function App() {
               <LoadingProvider>
                 <Navbar01 />
                 <SchemaPage />
-                <TestDetailsPane />
-                <TestRunner />
-                <Dashboard />
+                {/* <TestDetailsPane /> */}
+                {/* <TestRunner /> */}
+                {/* <Dashboard /> */}
               </LoadingProvider>
             </TerminalProvider>
           </FileProvider>
