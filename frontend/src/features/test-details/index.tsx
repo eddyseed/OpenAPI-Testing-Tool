@@ -13,7 +13,6 @@ import type { OpenAPIV3 } from "openapi-types";
 import type { EndpointRow } from "@/types/endPointRow.type";
 import Button from "@/components/ui/button";
 import { COLORS } from "@/config/appConfig";
-
 type OperationObject = OpenAPIV3.OperationObject;
 type PathItemObject = OpenAPIV3.PathItemObject;
 
@@ -79,7 +78,6 @@ const TestDetailsPane: React.FC = () => {
 
       <h1 className="text-white flex flex-col justify-center px-12 space-y-2">
         <span className="text-2xl font-bold">Edit & Modify Test Configurations</span>
-        <p className="text-green-300">Using Ollama Model: Gemma2:2b</p>
       </h1>
 
       <div className="grid space-x-3 px-3 items-center">
