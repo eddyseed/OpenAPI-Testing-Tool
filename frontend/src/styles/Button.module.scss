@@ -1,0 +1,20 @@
+.btn {
+  padding: 0px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.primary {
+  background-color: #0d1b1e;
+  color: #c3dbc5;
+  border: 1px solid #c3dbc5;
+}
+
+.secondary {
+  background-color: #0a477c;
+  color: white;
+  border: 1px solid #6c757d;
+}
+/* Add more styles (danger, success, large, small, etc.) */

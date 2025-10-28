@@ -3,7 +3,6 @@ import styles from "./index.module.scss";
 import { FileIcon, FileTypeIcon, LeafyGreenIcon, PlayIcon } from "lucide-react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "react-hot-toast";
 import { useFile } from "@/hooks/useFile";
 import { useLoading } from "@/hooks/useLoading";
@@ -12,6 +11,8 @@ import { useTerminal } from "@/hooks/useTerminal";
 import { useTestRunner } from "@/hooks/useTestRunner";
 import type { OpenAPIV3 } from "openapi-types";
 import type { EndpointRow } from "@/types/endPointRow.type";
+import Button from "@/components/ui/button";
+import { COLORS } from "@/config/appConfig";
 
 type OperationObject = OpenAPIV3.OperationObject;
 type PathItemObject = OpenAPIV3.PathItemObject;
@@ -73,7 +74,7 @@ const TestDetailsPane: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.test_details_page} bg-slate-950`} id="TEST_DETAILS_PANE">
+    <div className={`${styles.test_details_page} py-8`} style={{ backgroundColor: COLORS.primary, color: COLORS.text }} id="TEST_DETAILS_PANE">
       <Toaster position="top-center" reverseOrder={false} />
 
       <h1 className="text-white flex flex-col justify-center px-12 space-y-2">
@@ -83,7 +84,7 @@ const TestDetailsPane: React.FC = () => {
 
       <div className="grid space-x-3 px-3 items-center">
         {/* File Info Section */}
-        <section className={`${styles.test_info} bg-slate-900`}>
+        <section className={`${styles.test_info}`} style={{ backgroundColor: COLORS.background }}>
           <header>
             <span>Test Case & File Details</span>
           </header>
@@ -123,16 +124,11 @@ const TestDetailsPane: React.FC = () => {
         </section>
 
         {/* Test Runner Section */}
-        <section className={`${styles.test_info} bg-gray-700`}>
+        <section className={`${styles.test_activity}`} style={{ backgroundColor: COLORS.background }}>
           <header className="flex justify-between items-center text-white font-bold">
             <span>Run & View Test Results</span>
-            <Button
-              type="button"
-              disabled={!file || loading}
-              onClick={handleRunTests}
-              className={`${styles.generate_test_cases_btn} cursor-pointer py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none`}
-            >
-              {loading ? "Generating..." : <><PlayIcon /> Generate Test Cases</>}
+            <Button variant="primary" onClick={handleRunTests}>
+              <PlayIcon className="inline-block" />
             </Button>
           </header>
 

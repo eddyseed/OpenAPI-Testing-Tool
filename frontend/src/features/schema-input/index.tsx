@@ -11,6 +11,8 @@ import { useOpenApi } from '@/hooks/useOpenApi';
 import { useTerminal } from '@/hooks/useTerminal';
 import type { ErrorResponse } from '@/types/errorResponse.type';
 import { useTestRunner } from '@/hooks/useTestRunner';
+import { COLORS } from '@/config/appConfig';
+import Button from '@/components/ui/button';
 const SchemaPage: React.FC = () => {
     const { file, setFile } = useFile();
     const { setSpec } = useOpenApi();
@@ -85,7 +87,7 @@ const SchemaPage: React.FC = () => {
     };
 
     return (
-        <div className={`${styles.schema_page} bg-slate-950`}>
+        <div className={`${styles.schema_page}`} style={{ backgroundColor: COLORS.background, color: COLORS.text }}>
             <Toaster
                 position="top-center"
                 reverseOrder={false}
@@ -97,9 +99,9 @@ const SchemaPage: React.FC = () => {
                         height="70vh"
                         width="90%"
                         language={editorLanguage}
-                        value={content}   // controlled value, updates with file upload
+                        value={content}
                         theme="vs-dark"
-                        onChange={(value) => setContent(value || "")} // update state on content change
+                        onChange={(value) => setContent(value || "")}
                         options={{
                             fontSize: 16,
                             minimap: { enabled: false },
@@ -110,9 +112,9 @@ const SchemaPage: React.FC = () => {
                     />
                 </div>
                 <div className='items-center'>
-                    <header className='text-white'>
-                        <h1 className="text-3xl font-bold text-white">Upload or Paste your API Schema</h1>
-                        <p className="text-lg text-gray-300">
+                    <header>
+                        <h1 className="text-3xl font-bold">Upload or Paste your API Schema</h1>
+                        <p className="text-lg">
                             Supported formats: OpenAPI (YAML/JSON)
                         </p>
                         <br />
@@ -121,12 +123,12 @@ const SchemaPage: React.FC = () => {
                                 {[
                                     "Select a file to upload (e.g., sample.yaml).",
                                     "View the test cases to be executed.",
-                                    "Review and modify the generated test cases as needed.",
-                                    "Run the test cases to validate your API endpoints."
+                                    "Review and modify the generated cases",
+                                    "Run the test cases to validate"
                                 ]
                                     .map((step, i) => (
                                         <li key={i} className="flex items-start">
-                                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-3">
+                                            <span className="flex items-center justify-center w-7 h-7 rounded-full font-bold mr-3" style={{ backgroundColor: COLORS.text, color: COLORS.background }}>
                                                 {i + 1}
                                             </span>
                                             <span>{step}</span>
@@ -137,17 +139,10 @@ const SchemaPage: React.FC = () => {
                         </main>
                         <div className="space-x-4 flex">
                             {/* Upload Schema Button */}
-                            <button
-                                type="button"
-                                onClick={handleButtonClick}
-                                className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
-               bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200
-               disabled:opacity-50 disabled:pointer-events-none
-               dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20 cursor-pointer"
-                            >
-                                <UploadIcon /> Upload Schema File
-                            </button>
-
+                            <Button variant="secondary" onClick={handleButtonClick}>
+                                <UploadIcon className="inline-block mr-2" />
+                                Upload Schema
+                            </Button>
                             {/* Hidden File Input */}
                             <input
                                 type="file"
@@ -156,21 +151,16 @@ const SchemaPage: React.FC = () => {
                                 onChange={handleFileUpload}
                                 style={{ display: "none" }}
                             />
-                            <button
-                                disabled={!file || loading}
-                                type="submit"
-                                onClick={handleRunTests}
-                                className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
-               bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200
-               disabled:opacity-50 disabled:pointer-events-none
-               dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20 cursor-pointer"
-                            >
-                                {loading ? "Generating..." : <><PlayIcon /> Generate Test Cases</>}
-                            </button>
+                            <Button variant="primary" onClick={handleRunTests} disabled={!file || loading}>
+                                <PlayIcon className="inline-block mr-2" />
+                                Run Tests
+                            </Button>
                         </div>
+
 
                     </header>
                     <div>
+
                         <span className='text-white w-4/5'>
                             Learn more about
                             <a className='text-blue-400 underline mx-1' href="https://spec.openapis.org/oas/v3.1.0.html#openapi-specification" >OpenAPI Specification</a>

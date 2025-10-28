@@ -5,10 +5,7 @@ import { LoadingProvider } from './context/LoadingProvider'
 import { OpenApiProvider } from './context/openApiProvider'
 import { TerminalProvider } from './context/TerminalProvider'
 import { TestRunnerProvider } from './context/TestRunnerProvider'
-import Dashboard from './features/dashboard'
-import SchemaPage from './features/schema-input'
-import TestDetailsPane from './features/test-details'
-import TestRunner from './features/test-runner'
+import MainLayout from './layout/main-layout'
 function App() {
   return (
     <>
@@ -17,11 +14,7 @@ function App() {
           <FileProvider>
             <TerminalProvider>
               <LoadingProvider>
-                <Navbar01 />
-                <SchemaPage />
-                <TestDetailsPane />
-                <TestRunner />
-                <Dashboard />
+                <MainLayout Navbar={Navbar01} />
               </LoadingProvider>
             </TerminalProvider>
           </FileProvider>

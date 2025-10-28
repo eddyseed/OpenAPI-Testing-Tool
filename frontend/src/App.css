@@ -1,3 +1,7 @@
-.m{
+.m {
     border: 2px solid red;
+}
+
+body {
+    background: #020618;
 }

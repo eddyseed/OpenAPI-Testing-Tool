@@ -3,6 +3,7 @@ import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useTerminal } from "@/hooks/useTerminal";
+import { COLORS } from "@/config/appConfig";
 
 export default function TerminalView() {
     const terminalRef = useRef<HTMLDivElement | null>(null);
@@ -20,8 +21,8 @@ export default function TerminalView() {
             fontFamily: "'Fira Code', monospace",
             fontSize: 14,
             theme: {
-                background: "#0f0f1f",   // dark background
-                foreground: "#00ffff",   // neon cyan text
+                background: COLORS.primary,   // dark background
+                foreground: COLORS.text,   // neon cyan text
                 cursor: "#00ffff",       // neon cursor 
             }
         });
@@ -54,13 +55,12 @@ export default function TerminalView() {
     }, [messages, isConnected, error]);
 
     return (
-        <div
+        <div className="px-4 py-2"
             ref={terminalRef}
             style={{
                 width: "100%",
                 height: "300px",
-                backgroundColor: "#1e1e1e",
-                borderRadius: "8px",
+                backgroundColor: COLORS.background,
                 overflow: "hidden",
             }}
         />

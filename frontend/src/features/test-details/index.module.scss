@@ -1,39 +1,65 @@
 .test_details_page {
-    height: 100vh;
-    display: grid;
-    grid-template-rows: 1fr 6fr;
+  height: auto;
+  display: grid;
+  grid-template-rows: 1fr 6fr;
+  
+  & > div {
+    grid-template-columns: 2fr 5fr;
 
-    &>div {
-        grid-template-columns: 2fr 5fr;
+    & > section {
+      height: 95%;
+      display: grid;
+      grid-template-rows: 3fr 11fr;
 
-        &>section {
-            height: 95%;
-            display: grid;
-            grid-template-rows: 2fr 11fr;
-
-            &>header {
-                display: flex;
-                align-items: center;
-                padding: 0 25px;
-                // To the first child give space betweeen
-                &:nth-child(2){
-                    justify-content: space-between;
-                    padding-right: 25px;
-                }
-                &>span {
-                    font-size: 18px;
-                    font-weight: 600;
-                    color: white;
-                }
-            }
-
-            &.test_info {
-                border-radius: 5px;
-            }
-
-            &.test_activity {
-                padding-left: 20px;
-            }
+      & > header {
+        display: flex;
+        align-items: center;
+        padding: 0 25px;
+        // To the first child give space betweeen
+        &:nth-child(2) {
+          justify-content: space-between;
+          padding-right: 25px;
         }
+        & > span {
+          font-size: 18px;
+          font-weight: 600;
+          color: white;
+        }
+      }
+
+      &.test_info {
+        border-radius: 5px;
+      }
     }
+  }
+}
+@media only screen and (max-width: 768px) {
+  .test_details_page {
+    grid-template-rows: 1fr 12fr;
+    & > h1 {
+      padding: 0 1.5rem;
+      & > span {
+        font-size: 1.5rem;
+      }
+    }
+    & > div {
+      grid-template-columns: 1fr;
+      padding: 0;
+      & > section {
+        &:first-child {
+          width: 95vw;
+          margin: auto;
+        }
+        &:nth-child(2) {
+          grid-template-rows: 2fr 15fr;
+        }
+        &.test_info,
+        &.test_activity {
+          & > header {
+            padding: 25px 25px;
+          }
+        }
+      }
+    }
+  }
 }
