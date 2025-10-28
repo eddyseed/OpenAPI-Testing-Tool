@@ -20,7 +20,7 @@ const TestDetailsPane: React.FC = () => {
   const { file } = useFile();
   const { spec } = useOpenApi();
   const { logToTerminal } = useTerminal();
-  const { loading, setLoading } = useLoading();
+  const { setLoading } = useLoading();
   const { runTests } = useTestRunner();
 
   // Build table rows from OpenAPI spec
