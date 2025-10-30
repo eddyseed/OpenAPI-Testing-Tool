@@ -22,6 +22,7 @@ Each test case object in the array MUST have the following exact fields:
 - "headers": an object for HTTP headers (e.g., { "Content-Type": "application/json" }) or null
 - "body": an object for the request body or null
 - "expected_response_code": an integer for the expected HTTP status code (e.g., 200, 400, 201)
+Respond with only valid JSON array output. Do not include explanations, code blocks, or markdown.
 `;
 
   const dataContext = `
@@ -70,8 +71,7 @@ JSON Response:
       throw new Error("AI response is not a JSON array");
     }
     logger.info(
-      `Successfully generated ${
-        testCases.length
+      `Successfully generated ${testCases.length
       } test cases for ${method.toUpperCase()} ${path}`
     );
   } catch (error: unknown) {
@@ -80,11 +80,11 @@ JSON Response:
 
     logger.error(
       "AI test generation failed" +
-        {
-          error: message,
-          method,
-          path,
-        }
+      {
+        error: message,
+        method,
+        path,
+      }
     );
 
     console.error(error);
